@@ -32,7 +32,7 @@ server.use('/api', rootRouter);
 server.use(express.static('public'));
 
 // TODO Mongoose connection
-mongoose.connect("mongodb://127.0.0.1:27017/");
+mongoose.connect('mongodb://127.0.0.1:27017/codeverification')
 
 // Security Config  
 server.use(helmet());

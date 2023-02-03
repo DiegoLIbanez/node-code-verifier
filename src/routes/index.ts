@@ -4,6 +4,7 @@
 import express, {Express, Response, Request} from 'express'
 import helloRouter from './HelloRouter'
 import { LogInfo } from '../utils/logger'
+import usersRouter from './UserRouter';
 
 // Server instance
 const server: Express = express();
@@ -23,5 +24,6 @@ rootRouter.get('/', (req: Request, res: Response) => {
 server.use('/', rootRouter);
 server.use('/hello', helloRouter);
 // add more routes to the app
+server.use('/users', usersRouter)
 
 export default server;
