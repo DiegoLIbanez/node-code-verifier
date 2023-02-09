@@ -19,8 +19,8 @@ export class UserController implements IUserController {
     public async getUsers(@Query()id?: string): Promise<any> {
 
         let response: any = "";
-
-        if(id){
+        
+        if(id){            
             LogSuccess(`[api/users] Get User By ID`)
             response = await getUserByID(id)   
         }else{
@@ -44,6 +44,7 @@ export class UserController implements IUserController {
             LogSuccess(`[api/users] Delete User By ID`)
             await deleteUserByID(id).then(r => {
                 response = {
+                    status: 204,
                     message: `Usuario con el id: ${id} eliminado correctamente`
                 }
             }) 
@@ -88,5 +89,7 @@ export class UserController implements IUserController {
         }
         return response
     }
+
+    
 
 }

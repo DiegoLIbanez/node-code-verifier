@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { UserController } from "../controller/UsersController";
 import { LogInfo } from "../utils/logger";
 
+
 // Router from express
 const usersRouter = express.Router()
 
@@ -17,7 +18,7 @@ usersRouter.route('/')
     // Obtain Response
     const response: any = await controller.getUsers(id)
     // Send to the client the response
-    return res.send({response})
+    return res.status(200).send({response})
     })
     // DELETE
     .delete(async (req: Request, res: Response) => {
@@ -29,7 +30,7 @@ usersRouter.route('/')
         // Obtain Response
         const response: any = await controller.deleteUser(id);
         // Send to the client the response
-        return res.send(response)
+        return res.status(200).send(response)
 
     })
     // POST
@@ -51,7 +52,7 @@ usersRouter.route('/')
         // Obtain Response
         const response: any = await controller.createUser(user)
         // Send to the client the response
-        return res.send(response)
+        return res.status(201).send(response)
     })
     // PUT
     .put(async (req: Request, res: Response) => {
@@ -76,8 +77,17 @@ usersRouter.route('/')
         //Obtain Response
         const response: any =  await controller.updateUser(id, user) 
         // Send to the client the response
-        res.send(response)
+        res.status(200).send(response)
     })
 
 // Export Hello Router
 export default usersRouter;
+
+/**
+ * 
+ * Get Documents => 200 OK
+ * Creation Documents => 201 OK
+ * Deletion of Documents => 200 (Entity) / 204 (No return)
+ * Update of Documents => 200 (Entity) / 204 (No return)
+ * 
+ */
