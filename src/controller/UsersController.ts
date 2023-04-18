@@ -18,14 +18,22 @@ export class UserController implements IUserController {
     @Get("/")
     public async getUsers(@Query()id?: string): Promise<any> {
 
-        let response: any = "";
+        let response: any = ""; 
         
         if(id){            
             LogSuccess(`[api/users] Get User By ID`)
-            response = await getUserByID(id)   
+            response = await getUserByID(id)
+            response.password = ""
         }else{
             LogSuccess('[api/users] Get All Users Request')
             response = await getAllUser()
+
+            // response.map((item: any) => {
+            //     _id: item.id;
+            //     name: item.name;
+            //     email: item.email;
+            //     password: item.password = ""
+            // })
         }
 
         return response
@@ -56,19 +64,6 @@ export class UserController implements IUserController {
         }
 
         return response
-    }
-    @Post("/")
-    public async createUser(user: any): Promise<any> {
-        
-        let response: any = '';
-
-        await createUser(user).then( r => {
-            LogSuccess(`[/api/users] create User: ${user}`)
-            response = {
-                message: `User create successfully: ${user.name}`
-            }
-        })
-        return response;
     }
     @Put("/")
     public async updateUser(@Query()id: string, user: any): Promise<any> {

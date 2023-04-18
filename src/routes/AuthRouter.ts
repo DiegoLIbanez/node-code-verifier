@@ -6,14 +6,22 @@ import { IAuth } from "../domain/interfaces/IAuth.interface";
 // BCRYPT for password
 import bcrypt from 'bcrypt';
 
+// MiddleWare
+import { verifyToken } from "../middlewares/verifyToken.middleware";
+
+// Body Parser(Read JSON from Body)
+import bodyParser = require("body-parser");
+
+// Middleware to read JSON in Body
+let jsonParser = bodyParser.json();
 
 // Router from express
-let authRouter = express.Router()
+let authRouter = express.Router();
 
-authRouter.route('/auth/register')
-        .post(async (req: Request, res: Response) => {
+authRouter.route('/register')
+        .post(jsonParser, async (req: Request, res: Response) => {
 
-            let { name, email, password, age } = req.body;
+            let { name, email, age, password  } = req?.body;
             let hasPassword = '';
 
             if( name && password && email && age){
@@ -21,9 +29,9 @@ authRouter.route('/auth/register')
                 hasPassword = bcrypt.hashSync( password, 10 )
 
                 let newUser: IUser = {
-                    name, 
-                    email,
-                    age,
+                    name: name, 
+                    email: email,
+                    age: age,
                     password: hasPassword,
                 }
             
@@ -36,16 +44,19 @@ authRouter.route('/auth/register')
             
                 return res.status(200).send(response)
 
-            }   
+            }else{
+                return res.status(400).send({
+                    message: "[ERROR User Data missing] User can be registered"
+                })
+             }
 
 
         })
 
-authRouter.route('/auth/login')
-        .post(async (req: Request, res: Response) => { 
+authRouter.route('/login')
+        .post(jsonParser ,async (req: Request, res: Response) => { 
 
-            let { email, password } = req.body;
-            let hasPassword = '';
+            let { email, password } = req?.body;
 
             if( password && email ){
                 // Controller Instance to excute method
@@ -57,16 +68,41 @@ authRouter.route('/auth/login')
                     password
                 }
 
-
                 // Obtain response
                 const response: any = await controller.loginUser(auth);
 
                 //send to the client the response which includes the JWT 
                 return res.status(200).send(response);
 
-            }   
+            }else{
+                return res.status(400).send({
+                    message: "[ERROR User Data missing] User can be registered"
+                })
+            }
 
 
         })
 
-export default authRouter;
+
+// Router protected by verify token middleware
+authRouter.route("/me")
+      .get(verifyToken, async (req: Request, res: Response) => { 
+
+        //obtain the id of user ti check is data
+        let id: any = req?.query?.id;
+        if(id) { 
+            //controller: auth controller
+            const controller: AuthController = new AuthController()
+            //obtain response from controller 
+            const response: any = await controller.userData(id)
+            //if user is authorized  
+            return res.status(200).send(response)
+        }else{ 
+            return res.status(400).send({
+                message: "Your are not authorised to perform this action"
+            })
+        }
+
+      })
+
+export default authRouter; 
